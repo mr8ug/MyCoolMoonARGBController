@@ -1,17 +1,18 @@
+
 //#include "FastLED.h"
 #include <Adafruit_NeoPixel.h>
 #define NUM_LEDS 48
 #define PIN 6
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, PIN, NEO_GRB + NEO_KHZ800);
-Adafruit_NeoPixel strip2 = Adafruit_NeoPixel(16, 4, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel fans = Adafruit_NeoPixel(NUM_LEDS, PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel cpu_cooler = Adafruit_NeoPixel(16, 4, NEO_GRB + NEO_KHZ800);
 
 //CRGB leds[NUM_LEDS];
 
 //display
-#include <Wire.h> 
+#include <Wire.h>
 #include <LiquidCrystal_I2C.h>
-LiquidCrystal_I2C lcd(0x27,16,2);
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 #include <EEPROM.h>
 int effect;
@@ -38,11 +39,11 @@ void setup() {
   //FastLED.addLeds<WS2812B, PIN, GRB>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
   //FastLED.addLeds<WS2812B, 4, GRB>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
   //FastLED.setBrightness( 200 );
-  strip.begin();
-  strip.show();
+  fans.begin();
+  fans.show();
 
-  strip2.begin();
-  strip2.show();
+  cpu_cooler.begin();
+  cpu_cooler.show();
   //actualiza al hacer el reset
   value = EEPROM.read(address);
   effect = int(value);
@@ -54,16 +55,25 @@ void setup() {
     }
 
   }
-  counterMessage = 0;
+  counterMessage = 0; //this will show only once the lcd message to avoid data sending to many times.
   lcd.init();
   lcd.backlight();
   lcd.clear();
-  lcd.setCursor(0,0);
-  lcd.print("CoolMoon ARGB");
-  lcd.setCursor(0,1);
-  lcd.print("By MR8UG");
-  delay(1000);
-  
+  //  lcd.setCursor(0, 0);
+  //  lcd.print("CoolMoon ARGB");
+  //  lcd.setCursor(0, 1);
+  //  lcd.print("By MR8UG");
+  M_Letter();
+  delay(500);
+  R_Letter();
+  delay(500);
+  B_Letter();
+  delay(500);
+  U_Letter();
+  delay(500);
+  G_Letter();
+  delay(500);
+
 }
 
 void loop() {
@@ -74,110 +84,111 @@ void loop() {
   byte r = pallette[color][0];
   byte g = pallette[color][1];
   byte b = pallette[color][2];
-  
+
   //
   if (effect == 0) {
     lcd.clear();
-    lcd.setCursor(0,0);
+    lcd.setCursor(0, 0);
     lcd.print("Efecto #0");
-    lcd.setCursor(0,1);
+    lcd.setCursor(0, 1);
     lcd.print("METEOR RAIN");
     meteorRain(r, g, b, 2, 50, true, 30);
   }
   //
   if (effect == 1) {
     lcd.clear();
-    lcd.setCursor(0,0);
+    lcd.setCursor(0, 0);
     lcd.print("Efecto #0");
-    lcd.setCursor(0,1);
+    lcd.setCursor(0, 1);
     lcd.print("BOUNCING BALLS");
     BouncingBalls(r, g, b, 2);
   }
   //
   if (effect == 2) {
-    
-    if(counterMessage == 0){
+
+    if (counterMessage == 0) {
       lcd.clear();
-      lcd.setCursor(0,0);
+      lcd.setCursor(0, 0);
       lcd.print("Efecto #2");
-      lcd.setCursor(0,1);
+      lcd.setCursor(0, 1);
       lcd.print("FIRE");
-      counterMessage = 1; 
+      counterMessage = 1;
     }
-    
+
     Fire(25, 60, 25);
   }
   if (effect == 3) {
     lcd.clear();
-    lcd.setCursor(0,0);
+    lcd.setCursor(0, 0);
     lcd.print("Efecto #3");
-    lcd.setCursor(0,1);
+    lcd.setCursor(0, 1);
     lcd.print("SNOW SPARKLE");
     SnowSparkle(0x10, 0x10, 0x10, 20, random(100, 500));
   }
   if (effect == 4) {
     lcd.clear();
-    lcd.setCursor(0,0);
+    lcd.setCursor(0, 0);
     lcd.print("Efecto #4");
-    lcd.setCursor(0,1);
+    lcd.setCursor(0, 1);
     lcd.print("RAINBOW CYCLE");
     rainbowCycle(10);
   }
   if (effect == 5) {
     lcd.clear();
-    lcd.setCursor(0,0);
+    lcd.setCursor(0, 0);
     lcd.print("Efecto #5");
-    lcd.setCursor(0,1);
+    lcd.setCursor(0, 1);
     lcd.print("RAINBOW CYCLE 2");
     rainbowCycle2(5);
   }
   if (effect == 6) {
     lcd.clear();
-    lcd.setCursor(0,0);
+    lcd.setCursor(0, 0);
     lcd.print("Efecto #6");
-    lcd.setCursor(0,1);
+    lcd.setCursor(0, 1);
     lcd.print("NEW KITT");
     NewKITT(r, g, b, 4, 40, 50);
   }
   if (effect == 7) {
     lcd.clear();
-    lcd.setCursor(0,0);
+    lcd.setCursor(0, 0);
     lcd.print("Efecto #7");
-    lcd.setCursor(0,1);
+    lcd.setCursor(0, 1);
     lcd.print("THEATHER CHASE");
     theaterChaseRainbow(60);
   }
   if (effect == 8) {
-    
-    if(counterMessage == 0){
+
+    if (counterMessage == 0) {
       lcd.clear();
-      lcd.setCursor(0,0);
+      lcd.setCursor(0, 0);
       lcd.print("Efecto #8");
-      lcd.setCursor(0,1);
+      lcd.setCursor(0, 1);
       lcd.print("ICE");
-      counterMessage = 1; 
+      counterMessage = 1;
     }
     Ice(25, 60, 25);
   }
   if (effect == 9) {
-    
-    if(counterMessage == 0){
+
+    if (counterMessage == 0) {
       lcd.clear();
-      lcd.setCursor(0,0);
+      lcd.setCursor(0, 0);
       lcd.print("Efecto #9");
-      lcd.setCursor(0,1);
+      lcd.setCursor(0, 1);
       lcd.print("FOREST");
-      counterMessage = 1; 
+      counterMessage = 1;
     }
+    Forest(25, 60, 25);
   }
 
   if (effect == 10) {
     lcd.clear();
-    lcd.setCursor(0,0);
+    lcd.setCursor(0, 0);
     lcd.print("Efecto #10");
-    lcd.setCursor(0,1);
+    lcd.setCursor(0, 1);
     lcd.print("RANDOM");
-    int randomEffect = round(random(90) / 10);
+    int randomEffect = round(random(0,70) / 10);
     if (randomEffect == 0) {
       meteorRain(r, g, b, 2, 50, true, 30);
     }
@@ -197,12 +208,9 @@ void loop() {
       NewKITT(r, g, b, 4, 40, 50);
     }
     if (randomEffect == 6) {
-      theaterChaseRainbow(60);
-    }
-    if (randomEffect == 7) {
       Ice(25, 60, 25);
     }
-    if (randomEffect == 8) {
+    if (randomEffect == 7) {
       Forest(25, 60, 25);
     }
 
@@ -212,8 +220,8 @@ void loop() {
 void showStrip() {
 #ifdef ADAFRUIT_NEOPIXEL_H
   // NeoPixel
-  strip.show();
-  strip2.show();
+  fans.show();
+  cpu_cooler.show();
 #endif
 #ifndef ADAFRUIT_NEOPIXEL_H
   // FastLED
@@ -225,8 +233,12 @@ void setPixel(int Pixel, byte red, byte green, byte blue) {
 
 #ifdef ADAFRUIT_NEOPIXEL_H
   // NeoPixel
-  strip.setPixelColor(Pixel, strip.Color(red, green, blue));
-  strip2.setPixelColor(Pixel, strip.Color(red, green, blue));
+  fans.setPixelColor(Pixel, fans.Color(red, green, blue));
+  if (Pixel <=47 && Pixel >=0){
+    cpu_cooler.setPixelColor(Pixel-32, cpu_cooler.Color(red, green, blue));
+  }
+  
+  
 #endif
 #ifndef ADAFRUIT_NEOPIXEL_H
   // FastLED
@@ -236,9 +248,9 @@ void setPixel(int Pixel, byte red, byte green, byte blue) {
 #endif
 }
 
-void setPixelStrip(int Pixel, byte red, byte green ,byte blue){
+void setPixelStrip(int Pixel, byte red, byte green , byte blue) {
   //NeoPixel
-  
+
 }
 
 void setAll(byte red, byte green, byte blue) {
@@ -294,7 +306,7 @@ void fadeToBlack(int ledNo, byte fadeValue) {
   uint8_t r, g, b;
   int value;
 
-  oldColor = strip.getPixelColor(ledNo);
+  oldColor = fans.getPixelColor(ledNo);
   r = (oldColor & 0x00ff0000UL) >> 16;
   g = (oldColor & 0x0000ff00UL) >> 8;
   b = (oldColor & 0x000000ffUL);
@@ -303,7 +315,7 @@ void fadeToBlack(int ledNo, byte fadeValue) {
   g = (g <= 10) ? 0 : (int) g - (g * fadeValue / 256);
   b = (b <= 10) ? 0 : (int) b - (b * fadeValue / 256);
 
-  strip.setPixelColor(ledNo, r, g, b);
+  fans.setPixelColor(ledNo, r, g, b);
 #endif
 #ifndef ADAFRUIT_NEOPIXEL_H
   // FastLED
@@ -765,4 +777,124 @@ void setPixelForestColor (int Pixel, byte temperature) {
   } else {                               // coolest
     setPixel(remap[Pixel], 0, heatramp, 0 );
   }
+}
+
+void M_Letter() {
+  lcd.clear();
+  byte image04[8] = {B11000, B11100, B11110, B11010, B11011, B11011, B11001, B11001};
+  byte image20[8] = {B11000, B11000, B11000, B11000, B11000, B11000, B11000, B11000};
+  byte image05[8] = {B00011, B00111, B01111, B01011, B11011, B11011, B10011, B10011};
+  byte image21[8] = {B00011, B00011, B00011, B00011, B00011, B00011, B00011, B00011};
+
+  lcd.createChar(0, image04);
+  lcd.createChar(1, image20);
+  lcd.createChar(2, image05);
+  lcd.createChar(3, image21);
+
+  lcd.setCursor(3, 0);
+  lcd.write(byte(0));
+  lcd.setCursor(3, 1);
+  lcd.write(byte(1));
+  lcd.setCursor(4, 0);
+  lcd.write(byte(2));
+  lcd.setCursor(4, 1);
+  lcd.write(byte(3));
+}
+
+void R_Letter() {
+  lcd.clear();
+  byte image06[8] = {B11111, B11111, B11000, B11000, B11000, B11000, B11000, B11001};
+  byte image22[8] = {B11001, B11001, B11001, B11000, B11000, B11000, B11000, B11000};
+  byte image07[8] = {B11110, B11111, B00011, B00011, B00011, B00011, B00111, B11110};
+  byte image23[8] = {B10000, B10000, B11000, B11100, B01100, B01110, B00111, B00011};
+
+  lcd.createChar(0, image06);
+  lcd.createChar(1, image22);
+  lcd.createChar(2, image07);
+  lcd.createChar(3, image23);
+
+  lcd.setCursor(5, 0);
+  lcd.write(byte(0));
+  lcd.setCursor(5, 1);
+  lcd.write(byte(1));
+  lcd.setCursor(6, 0);
+  lcd.write(byte(2));
+  lcd.setCursor(6, 1);
+  lcd.write(byte(3));
+
+}
+
+
+void B_Letter() {
+  lcd.clear();
+
+  byte image08[8] = {B00111, B01111, B11110, B11100, B11100, B11110, B01111, B00111};
+  byte image09[8] = {B11100, B11110, B01111, B00111, B00111, B01111, B11110, B11100};
+  byte image24[8] = {B00111, B01111, B11110, B11100, B11100, B11110, B01111, B00111};
+  byte image25[8] = {B11100, B11110, B01111, B00111, B00111, B01111, B11110, B11100};
+
+  lcd.createChar(0, image08);
+  lcd.createChar(1, image09);
+  lcd.createChar(2, image24);
+  lcd.createChar(3, image25);
+
+  lcd.setCursor(7, 0);
+  lcd.write(byte(0));
+  lcd.setCursor(8, 0);
+  lcd.write(byte(1));
+  lcd.setCursor(7, 1);
+  lcd.write(byte(2));
+  lcd.setCursor(8, 1);
+  lcd.write(byte(3));
+
+}
+
+
+void U_Letter() {
+
+  lcd.clear();
+
+  byte image10[8] = {B11000, B11000, B11000, B11000, B11000, B11000, B11000, B11000};
+  byte image26[8] = {B11000, B11000, B11000, B11000, B11000, B01100, B00111, B00011};
+  byte image27[8] = {B00011, B00011, B00011, B00011, B00011, B00110, B11100, B11000};
+  byte image11[8] = {B00011, B00011, B00011, B00011, B00011, B00011, B00011, B00011};
+
+  lcd.createChar(0, image10);
+  lcd.createChar(1, image26);
+  lcd.createChar(2, image27);
+  lcd.createChar(3, image11);
+
+  lcd.setCursor(9, 0);
+  lcd.write(byte(0));
+  lcd.setCursor(9, 1);
+  lcd.write(byte(1));
+  lcd.setCursor(10, 1);
+  lcd.write(byte(2));
+  lcd.setCursor(10, 0);
+  lcd.write(byte(3));
+}
+
+
+void G_Letter() {
+  lcd.clear();
+
+  byte image12[8] = {B00111, B01111, B11000, B11000, B11000, B11000, B11000, B11001};
+  byte image28[8] = {B11001, B11001, B11000, B11000, B11000, B11000, B01111, B00111};
+  byte image29[8] = {B11111, B10011, B00011, B00011, B00011, B00011, B11110, B11100};
+  byte image13[8] = {B11100, B11110, B00011, B00000, B00000, B00000, B00000, B11110};
+
+  lcd.createChar(0, image12);
+  lcd.createChar(1, image28);
+  lcd.createChar(2, image29);
+  lcd.createChar(3, image13);
+
+  lcd.setCursor(11, 0);
+  lcd.write(byte(0));
+  lcd.setCursor(11, 1);
+  lcd.write(byte(1));
+  lcd.setCursor(12, 1);
+  lcd.write(byte(2));
+  lcd.setCursor(12, 0);
+  lcd.write(byte(3));
+
 }
